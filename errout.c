@@ -57,7 +57,7 @@ int main( void )
   char	 cp[8];
   WCHAR  env[4];
   BOOL	 delay;
-  int	 rc;
+  DWORD	 rc;
 
   rc   = 0;
   argv = GetCommandLine();
@@ -190,7 +190,7 @@ int main( void )
 	case 'f': pFile = &global.hFilCon; break;
       }
       get_arg( arg, &argv, &cmd );
-      *pFile = CreateFile( arg, GENERIC_WRITE, 0, &sa,
+      *pFile = CreateFile( arg, GENERIC_WRITE, FILE_SHARE_READ, &sa,
 			   (append) ? OPEN_ALWAYS : CREATE_ALWAYS, 0, 0 );
       if (*pFile == INVALID_HANDLE_VALUE)
       {
@@ -229,6 +229,8 @@ int main( void )
     CloseHandle( pi.hThread );
     SetConsoleCtrlHandler( (PHANDLER_ROUTINE)CtrlHandler, TRUE );
     WaitForSingleObject( pi.hProcess, INFINITE );
+    // get exit code
+    GetExitCodeProcess( pi.hProcess, &rc );
     CloseHandle( pi.hProcess );
   }
   else
